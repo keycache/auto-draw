@@ -10,6 +10,10 @@ from constants import BIN_FOLDER_NAME, RES_FOLDER_NAME, TARGET_PATH
 from image import ImageSegment, Point
 
 
+def mkdir(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+
 def get_image_size(image: np.ndarray):
     return image.shape[:2]
 
@@ -50,8 +54,7 @@ def get_target_dir_binary(image_path):
         ),
     )
     target_dir_binary = os.path.join(target_dir, BIN_FOLDER_NAME)
-    Path(target_dir_binary).mkdir(parents=True, exist_ok=True)
-    # print(f"Created dir {target_dir_binary}")
+    mkdir(target_dir_binary)
     return target_dir_binary
 
 
@@ -63,8 +66,7 @@ def get_target_dir_result(image_path):
         ),
     )
     target_dir_result = os.path.join(target_dir, RES_FOLDER_NAME)
-    Path(target_dir_result).mkdir(parents=True, exist_ok=True)
-    # print(f"Created dir {target_dir_result}")
+    mkdir(target_dir_result)
     return target_dir_result
 
 

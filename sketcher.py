@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+from time import time
 from typing import Iterator
 
 import cv2
@@ -8,14 +11,23 @@ from constants import (
     FRAME_RATE,
     LARGE_SEGMENT_PIXEL_COUNT,
     SNAPSHOT_TIMES,
+    VIDEO_FOLDER_NAME,
+    Render,
 )
 from image import ImageSegment
 from image_orchestrator import AutoImageDraw
-from utils import comparator_closest_segment, comparator_img_seg_size
+from utils import (
+    comparator_closest_segment,
+    comparator_img_seg_size,
+    get_filename_from_path,
+    mkdir,
+)
 
 
 class Sketcher:
-    def __init__(self, binary_filepath: str, snanpshot_times=None) -> None:
+    def __init__(
+        self, binary_filepath: str, snanpshot_times=None, mode: str = None
+    ) -> None:
         self.aid = AutoImageDraw.load(binary_filepath)
         self.binary_filepath = binary_filepath
         self.snanpshot_times = snanpshot_times or SNAPSHOT_TIMES
@@ -32,6 +44,16 @@ class Sketcher:
         # 1000 represents the millseconds
         # delay represents the time in ms to wait for opencv
         self.delay = int(1000 / self.frame_rate)
+        self.target_dir = None
+        self.mode = mode or Render.ACTIVE
+        self.setup()
+
+    def setup(self):
+        target_dir = os.path.join(
+            Path(self.binary_filepath).parents[1], VIDEO_FOLDER_NAME
+        )
+        mkdir(target_dir)
+        self.target_dir = target_dir
 
     def paint(self):
         self.paint_non_k_segments()
@@ -44,22 +66,52 @@ class Sketcher:
                 return snapshot_ctr
         return self.snapshot_counter
 
+    def get_file_name(self):
+        file_name = "_".join(
+            get_filename_from_path(
+                self.binary_filepath, include_ext=False
+            ).split("_")[:-1]
+        )
+        return f"{file_name}_{int(time()*1000)}"
+
     def paint_segments(self, image_segments: Iterator[ImageSegment]):
         for i, image_segment in enumerate(image_segments):
             snapshot_counter = self.get_snapshot_counter(image_segment)
             print(
-                f"Snapshot Counter for seg_id({i}) -> {snapshot_counter} ->"
-                f" {len(image_segment.points)}"
+                f"Snapshot Counter for seg_id({i+1}/{len(image_segments)}) ->"
+                f" {snapshot_counter} -> {len(image_segment.points)}"
             )
             count = 0
+            file_name = self.get_file_name()
             for j, point in enumerate(image_segment.points):
                 x, y = point.x, point.y
                 self.image[y, x] = image_segment.color
                 if count % snapshot_counter == 0:
-                    # print(f"count={count}, seg_id={i}, point_id={j}")
-                    cv2.imshow("default", self.image)
-                    cv2.waitKey(self.delay)
+                    self.process_image(file_name=f"{file_name}_{i}_{j}.png")
                 count += 1
+            self.process_image(file_name=f"{file_name}_{i}_{j}.png")
+
+    def show_image_snapshot(self, image: np.ndarray):
+        cv2.imshow("default", image)
+        cv2.waitKey(self.delay)
+
+    def save_image_snapshot(
+        self, file_name: str, target_dir: str = None, image: np.ndarray = None
+    ):
+        file_path = os.path.join(target_dir or self.target_dir, file_name)
+        if not os.path.exists(file_path):
+            image = image if image is not None else self.image
+            cv2.imwrite(file_path, image)
+
+    def process_image(self, file_name: str):
+        if self.mode == Render.ACTIVE:
+            self.show_image_snapshot(image=self.image)
+        if self.mode == Render.OFFLINE:
+            self.save_image_snapshot(
+                image=self.image,
+                target_dir=self.target_dir,
+                file_name=file_name,
+            )
 
     def partition_segments(
         self, segments: Iterator[ImageSegment]
@@ -136,9 +188,13 @@ class Sketcher:
 
 def run():
     binary_filepath = (
-        ".data/images/mandala_circular/bin/mandala_circular_1661403840989.pkl"
+        ".data/images/mandala_circular/bin/mandala_circular_1661632391569.pkl"
     )
-    sketcher = Sketcher(binary_filepath=binary_filepath, snanpshot_times=None)
+    sketcher = Sketcher(
+        binary_filepath=binary_filepath,
+        snanpshot_times=None,
+        mode=Render.OFFLINE,
+    )
     sketcher.paint()
 
 

@@ -1,6 +1,7 @@
 TARGET_PATH = ".data/images"
 BIN_FOLDER_NAME = "bin"
 RES_FOLDER_NAME = "out"
+VIDEO_FOLDER_NAME = "video"
 LOG_LIMIT = 50
 REFERENCE_FILENAME = "base.pkl"
 FRAME_RATE = 24
@@ -21,8 +22,9 @@ SNAPSHOT_TIMES = (
 )
 
 
-ACTIVE = "active"
-OFFLINE = "offline"
+class Render:
+    ACTIVE = "active"
+    OFFLINE = "offline"
 
 
 class Color:

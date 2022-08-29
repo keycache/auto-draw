@@ -16,7 +16,7 @@ This project is a proof of concept for auto generating a randomly generating a c
 		 - [x] Create a randomized coloured version(s) of the image
 		 - [x] load the `pkl` file for processing in future
  - [ ] logging
- - [ ] Save snapshots
+ - [x] Save snapshots
  - [ ] Make Video
 	 - [ ] leverage `pymovie`
 	 - [ ] user audio
