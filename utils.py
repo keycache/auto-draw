@@ -1,12 +1,18 @@
 import math
 import os
+import re
 from pathlib import Path
 from typing import Iterator
 
 import cv2
 import numpy as np
 
-from constants import BIN_FOLDER_NAME, RES_FOLDER_NAME, TARGET_PATH
+from constants import (
+    BIN_FOLDER_NAME,
+    MAX_IMAGE_SIZE,
+    RES_FOLDER_NAME,
+    TARGET_PATH,
+)
 from image import ImageSegment, Point
 
 
@@ -22,7 +28,7 @@ def get_image_resize(
     image: np.ndarray, interpolation=cv2.INTER_AREA
 ) -> np.ndarray:
     height, width = get_image_size(image=image)
-    size = min(800, height, width)
+    size = min(MAX_IMAGE_SIZE, height, width)
     image = cv2.resize(image, (size, size), interpolation=interpolation)
     return image
 
@@ -91,6 +97,16 @@ def comparator_closest_segment(
     point = segment.points[0]
     ref_point = ref_segment.points[0]
     return get_distance(point, ref_point)
+
+
+def comparator_alphanum(item: str):
+    def tryint(item):
+        try:
+            return int(item)
+        except:
+            return item
+
+    return [tryint(c) for c in re.split("([0-9]+)", item)]
 
 
 if __name__ == "__main__":

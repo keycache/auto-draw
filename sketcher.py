@@ -11,7 +11,7 @@ from constants import (
     FRAME_RATE,
     LARGE_SEGMENT_PIXEL_COUNT,
     SNAPSHOT_TIMES,
-    VIDEO_FOLDER_NAME,
+    SNAPSHOTS_FOLDER_NAME,
     Render,
 )
 from image import ImageSegment
@@ -50,7 +50,7 @@ class Sketcher:
 
     def setup(self):
         target_dir = os.path.join(
-            Path(self.binary_filepath).parents[1], VIDEO_FOLDER_NAME
+            Path(self.binary_filepath).parents[1], SNAPSHOTS_FOLDER_NAME
         )
         mkdir(target_dir)
         self.target_dir = target_dir
@@ -86,10 +86,9 @@ class Sketcher:
             for j, point in enumerate(image_segment.points):
                 x, y = point.x, point.y
                 self.image[y, x] = image_segment.color
-                if count % snapshot_counter == 0:
+                if count % snapshot_counter == 1:
                     self.process_image(file_name=f"{file_name}_{i}_{j}.png")
                 count += 1
-            self.process_image(file_name=f"{file_name}_{i}_{j}.png")
 
     def show_image_snapshot(self, image: np.ndarray):
         cv2.imshow("default", image)
@@ -184,11 +183,13 @@ class Sketcher:
         ):
             print(f"Painting {len(segments)} colored segments")
             self.paint_segments(segments)
+            for segment in segments:
+                segment.sort_avg()
 
 
 def run():
     binary_filepath = (
-        ".data/images/mandala_circular/bin/mandala_circular_1661632391569.pkl"
+        ".data/images/mandala-ganesha/bin/mandala-ganesha_1661924904338.pkl"
     )
     sketcher = Sketcher(
         binary_filepath=binary_filepath,

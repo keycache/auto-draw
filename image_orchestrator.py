@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import pickle
 from copy import deepcopy
-from pathlib import Path
 from time import time
 from typing import Iterator
 
@@ -46,10 +45,13 @@ class AutoImageDraw:
         )
         self.log_ctr = (self.image_height * self.image_width) // LOG_LIMIT
         self.image_segments = image_segments or []
+        print(f"Image height/width->{self.image_height}/{self.image_width}")
 
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
+        print("Preprocessing image")
         image = get_image_resize(image=image)
         image = get_image_grayscale(image=image)
+        print("Preprocessing image complete")
         return get_image_binary(image=image)
 
     @property
@@ -81,7 +83,7 @@ class AutoImageDraw:
         Saves the pkl file of the image as ImageSegments(and Points)
         """
         seen = {}
-        image = image or self.image
+        image = image if image is not None else self.image
         total = self.image_width * self.image_height
         for x in range(0, self.image_width):
             for y in range(0, self.image_height):
@@ -146,7 +148,7 @@ class AutoImageDraw:
         """
         with open(os.path.join(target_dir_binary, filename), "wb") as fh:
             pickle.dump(aid, fh)
-            print(f"Saved image to -> {fh.name}")
+            print(f"Saved binary to -> {fh.name}")
         return aid
 
     @classmethod
@@ -236,7 +238,7 @@ def render_variations(image_path, source_dir_binary):
         try:
             filename = f"{filename}.png"
             if not os.path.exists(os.path.join(target_dir, filename)):
-                print(f"???Processing {i+1} of {len(bin_filenames)}")
+                print(f"Processing {i+1} of {len(bin_filenames)}")
                 aid.repaint(target_filename=filename, target_dir=target_dir)
         except Exception as e:
             print(f"Failed to repaint {filename}: {e}")
@@ -246,7 +248,7 @@ if __name__ == "__main__":
     # needed to load the pkl file
     from image import Point
 
-    image_path = ".data/images/mandala_circular.jpeg"
-    create_variations(image_path=image_path, count=1)
-    source_dir = ".data/images/mandala_circular/bin"
+    image_path = ".data/images/mandala-ganesha.jpg"
+    create_variations(image_path=image_path, count=10)
+    source_dir = ".data/images/mandala-ganesha/bin"
     render_variations(image_path=image_path, source_dir_binary=source_dir)

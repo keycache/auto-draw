@@ -94,11 +94,33 @@ class ImageSegment:
         else:
             self.color = self.base_color
 
-    def sort_x(self):
+    def sort_x(self) -> Iterator[Point]:
         def comparator(point: Point) -> int:
             return point.x
 
         self.points = sorted(self.points, key=comparator)
+        return self.points
+
+    def sort_y(self) -> Iterator[Point]:
+        def comparator(point: Point) -> int:
+            return point.y
+
+        self.points = sorted(self.points, key=comparator)
+        return self.points
+
+    def sort_avg(self) -> Iterator[Point]:
+        def comparator(point: Point) -> int:
+            return (point.x + point.y) / 2
+
+        self.points = sorted(self.points, key=comparator)
+        return self.points
+
+    def sort_distance(self) -> Iterator[Point]:
+        def comparator(point: Point) -> int:
+            return sqrt(point.x**2 + point.y**2)
+
+        self.points = sorted(self.points, key=comparator)
+        return self.points
 
     ###implement others as needed
 
