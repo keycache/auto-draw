@@ -4,6 +4,7 @@
 ####Misc####
 .DS_Store
 .data/
+.mp3
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
