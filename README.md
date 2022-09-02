@@ -24,7 +24,7 @@ This project is a proof of concept for auto generating a randomly generating a c
  - [x] Incremental sketcher
 	 - [x] load the `pkl` file.
 	 - [x] Define snapshot thresholds.
-	 - [x] build sorting for `image segents` and the `point`s within.
+	 - [x] build sorting for `image segments` and the `point`s within.
 	 - [x] rendering scheme using snapshot thresholds and sorters.
 
 ----------
