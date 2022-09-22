@@ -1,8 +1,10 @@
 import os
+from email.policy import default
 from pathlib import Path
 from time import time
 from typing import Iterator
 
+import click
 import cv2
 import numpy as np
 
@@ -187,14 +189,28 @@ class Sketcher:
                 segment.sort_avg()
 
 
-def run():
-    binary_filepath = (
-        ".data/images/mandala-ganesha/bin/mandala-ganesha_1661924904338.pkl"
-    )
+@click.command()
+@click.option(
+    "--binary-file-path",
+    required=True,
+    type=str,
+    help="Path to the 'pkl' file, to be rendered.",
+)
+@click.option(
+    "--mode",
+    required=False,
+    type=click.Choice((Render.ACTIVE, Render.OFFLINE)),
+    default=Render.ACTIVE,
+    help=(
+        "Rendering mode. 'active' renders the images in a window. 'offline'"
+        " generates incremental images of the render."
+    ),
+)
+def run(binary_file_path, mode):
     sketcher = Sketcher(
-        binary_filepath=binary_filepath,
+        binary_filepath=binary_file_path,
         snanpshot_times=None,
-        mode=Render.OFFLINE,
+        mode=mode,
     )
     sketcher.paint()
 

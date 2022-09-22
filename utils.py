@@ -2,7 +2,7 @@ import math
 import os
 import re
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Tuple
 
 import cv2
 import numpy as np
@@ -16,6 +16,11 @@ from constants import (
 from image import ImageSegment, Point
 
 
+def create_empty_image(size: Iterator[int]) -> np.ndarray:
+    # size = image_height, image_width
+    return np.zeros((*size, 3), np.uint8)
+
+
 def mkdir(path):
     Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -25,11 +30,13 @@ def get_image_size(image: np.ndarray):
 
 
 def get_image_resize(
-    image: np.ndarray, interpolation=cv2.INTER_AREA
+    image: np.ndarray, interpolation=cv2.INTER_AREA, resize: Tuple[int] = None
 ) -> np.ndarray:
-    height, width = get_image_size(image=image)
-    size = min(MAX_IMAGE_SIZE, height, width)
-    image = cv2.resize(image, (size, size), interpolation=interpolation)
+    if not resize:
+        height, width = get_image_size(image=image)
+        size = min(MAX_IMAGE_SIZE, height, width)
+        resize = (size, size)
+    image = cv2.resize(image, resize, interpolation=interpolation)
     return image
 
 

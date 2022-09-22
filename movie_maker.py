@@ -2,6 +2,7 @@ import os
 from glob import glob
 from typing import Iterator
 
+import click
 import cv2
 from moviepy.config import change_settings
 from moviepy.editor import (
@@ -129,7 +130,7 @@ class MovieMaker:
 
     def process_vfx(self, video_clip: VideoClip) -> VideoClip:
         print("Adding V-FX")
-        video_clip = self.vfx_freeze(video_clip=video_clip, duration=2)
+        # video_clip = self.vfx_freeze(video_clip=video_clip, duration=2)
         video_clip = self.vfx_fadein(video_clip=video_clip)
         video_clip = self.vfx_fadeout(video_clip=video_clip)
         print("Adding V-FX complete")
@@ -229,14 +230,82 @@ class MovieMaker:
         return target_file_path
 
 
+@click.command()
+@click.option(
+    "--intro-path",
+    required=True,
+    type=str,
+    help="Path to the intro video file.",
+)
+@click.option(
+    "--outro-path",
+    required=True,
+    type=str,
+    help="Path to the outro video file.",
+)
+@click.option(
+    "--bg-audio-path",
+    required=True,
+    type=str,
+    help="Path to the backgound audio file.",
+)
+@click.option(
+    "--shadow-path",
+    required=True,
+    type=str,
+    help="Path to the shadow file.",
+)
+@click.option(
+    "--source",
+    required=True,
+    type=str,
+    help="Directory with incrementally rendered images.",
+)
+@click.option(
+    "--target",
+    required=True,
+    type=str,
+    help="Directory to store final output.",
+)
+@click.option(
+    "--target-name",
+    required=False,
+    type=str,
+    default="result.mp4",
+    help="Name of the final rendered video.",
+)
+def run(
+    intro_path,
+    outro_path,
+    bg_audio_path,
+    shadow_path,
+    source,
+    target,
+    target_name,
+):
+    """
+    Movie Maker generates a video file.
+    """
+    MovieMaker(
+        intro_file_path=intro_path,
+        outro_file_path=outro_path,
+        bg_audio_file_path=bg_audio_path,
+        shadow_image_path=shadow_path,
+        source_dir=source,
+        target_dir=target,
+        target_file_name=target_name,
+    ).process()
+    # mm = MovieMaker(
+    #     intro_file_path="/Users/akashpatki/Documents/kash/python/auto_draw/.data/assets/intro.mp4",
+    #     outro_file_path="/Users/akashpatki/Documents/kash/python/auto_draw/.data/assets/outro.mp4",
+    #     bg_audio_file_path="/Users/akashpatki/Documents/kash/python/auto_draw/.data/assets/music/the-sea-is-calling-99289.mp3",
+    #     shadow_image_path="/Users/akashpatki/Documents/kash/python/auto_draw/.data/assets/shadow.png",
+    #     source_dir="/Users/akashpatki/Documents/kash/python/auto_draw/.data/images/queen/snapshots",
+    #     target_dir="/Users/akashpatki/Documents/kash/python/auto_draw/.data/images/queen/video",
+    #     target_file_name="result.mp4",
+    # )
+    # mm.process()
+
+
 if __name__ == "__main__":
-    mm = MovieMaker(
-        intro_file_path=".data/assets/intro.mp4",
-        outro_file_path=".data/assets/outro.mp4",
-        shadow_image_path=".data/assets/shadow.png",
-        source_dir=".data/images/mandala-ganesha/snapshots",
-        bg_audio_file_path=".data/assets/music/a-day-in-india.mp3",
-        target_dir=".data/images/mandala-ganesha/video",
-        target_file_name="result.mp4",
-    )
-    mm.process()
+    run()

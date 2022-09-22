@@ -6,6 +6,7 @@ from copy import deepcopy
 from time import time
 from typing import Iterator
 
+import click
 import cv2
 import numpy as np
 
@@ -244,11 +245,33 @@ def render_variations(image_path, source_dir_binary):
             print(f"Failed to repaint {filename}: {e}")
 
 
-if __name__ == "__main__":
+@click.command()
+@click.option(
+    "--image-path", required=True, type=str, help="Base Image to draw"
+)
+@click.option(
+    "--target-dir",
+    required=True,
+    type=str,
+    help="Target directory to store final renders/bin files.",
+)
+@click.option(
+    "--versions",
+    required=False,
+    type=int,
+    default=1,
+    help="Total count of random images to be generated.",
+)
+def run(image_path, target_dir, versions):
+    """
+    Random Image (version)generator given a source image.
+    """
     # needed to load the pkl file
     from image import Point
 
-    image_path = ".data/images/mandala-ganesha.jpg"
-    create_variations(image_path=image_path, count=10)
-    source_dir = ".data/images/mandala-ganesha/bin"
-    render_variations(image_path=image_path, source_dir_binary=source_dir)
+    create_variations(image_path=image_path, count=versions)
+    render_variations(image_path=image_path, source_dir_binary=target_dir)
+
+
+if __name__ == "__main__":
+    run()
