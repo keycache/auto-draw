@@ -29,6 +29,14 @@ This project is a proof of concept for auto generating a randomly generating a c
 	 - [x] Define snapshot thresholds.
 	 - [x] build sorting for `image segments` and the `point`s within.
 	 - [x] rendering scheme using snapshot thresholds and sorters.
+- [x] Thumbnail Generator
+	 - [x] Create vanilla thumbnail.
+	 - [ ] Generate final thumbnail
+	 	- [ ] Compose images
+		- [ ] Text Placement
+		- [ ] Image size control
+
+
 
 ----------
 
